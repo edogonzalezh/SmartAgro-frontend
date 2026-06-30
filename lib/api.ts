@@ -9,11 +9,20 @@ export interface EtapaLote {
   fechaReal: string | null;
 }
 
+export interface TareaLote {
+  id: string;
+  nombre: string;
+  etapaAncla: string;
+  offsetDias: number;
+  fechaPlanificada: string;
+}
+
 export interface Lote {
   id: string;
   nombre: string;
   fichaId: string;
   etapas: EtapaLote[];
+  tareas: TareaLote[];
 }
 
 export async function crearUsuario(nombre: string, email: string): Promise<{ id: string }> {
