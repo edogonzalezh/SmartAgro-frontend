@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { type Lote } from "@/lib/api";
+import { type Lote, type EtapaLote } from "@/lib/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -33,8 +33,8 @@ function parseFecha(s) { return new Date(s); }
 function fmt(d) { return d.toLocaleDateString("es-CL", { day:"numeric", month:"short" }); }
 function diffDias(a, b) { return Math.round((b.getTime() - a.getTime()) / 86400000); }
 
-function construirEtapas(lote) {
-  const map = new Map(lote.etapas.map((e) => [e.etapaCodigo, e]));
+function construirEtapas(lote: Lote) {
+  const map = new Map<string, EtapaLote>(lote.etapas.map((e) => [e.etapaCodigo, e]));
   return ETAPAS_CONFIG.reduce((acc, cfg) => {
     const etapa = map.get(cfg.codigo);
     if (!etapa) return acc;
