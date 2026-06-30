@@ -1,99 +1,165 @@
-// app/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { EtapaCard } from "@/components/EtapaCard";
 import { confirmarEtapa, type Lote } from "@/lib/api";
 
-// NOTA: en el MVP real, esta lista vendría de un endpoint GET /lotes (a agregar).
-// Por ahora se deja la estructura de datos lista para conectar.
-async function obtenerLotesDelAgricultor(): Promise<Lote[]> {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
+async function obtenerLotes(): Promise<Lote[]> {
   const res = await fetch(`${API_URL}/lotes`);
   if (!res.ok) return [];
   return res.json();
 }
 
 function diasHasta(fecha: string): number {
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const f = new Date(fecha);
-  return Math.round((f.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((new Date(fecha).getTime() - hoy.getTime()) / 86400000);
+}
+
+function etiquetaDia(dias: number): { texto: string; color: string; bg: string } {
+  if (dias < 0)  return { texto: `Hace ${Math.abs(dias)}d`, color:"#c0392b", bg:"#fde8e6" };
+  if (dias === 0) return { texto: "Hoy",       color:"#c0392b", bg:"#fde8e6" };
+  if (dias <= 3)  return { texto: `${dias}d`,   color:"#e07b28", bg:"#fdefd8" };
+  return              { texto: `${dias}d`,       color:"#2d6a4f", bg:"#d8ede2" };
+}
+
+function barraUrgencia(dias: number): string {
+  if (dias <= 0) return "#c0392b";
+  if (dias <= 3) return "#e07b28";
+  if (dias <= 7) return "#52b788";
+  return "#b8ceb8";
 }
 
 export default function HoyPage() {
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [confirmandoId, setConfirmandoId] = useState<string|null>(null);
+  const [fechaInputs, setFechaInputs] = useState<Record<string,string>>({});
 
   useEffect(() => {
-    obtenerLotesDelAgricultor()
-      .then(setLotes)
-      .finally(() => setCargando(false));
+    obtenerLotes().then(setLotes).finally(() => setCargando(false));
   }, []);
 
-  async function handleConfirmar(loteId: string, etapaCodigo: string, fechaReal: string) {
-    await confirmarEtapa(loteId, etapaCodigo, fechaReal);
-    const actualizados = await obtenerLotesDelAgricultor();
+  async function handleConfirmar(loteId: string, etapaCodigo: string) {
+    const key = `${loteId}-${etapaCodigo}`;
+    const fecha = fechaInputs[key] ?? new Date().toISOString().split("T")[0];
+    await confirmarEtapa(loteId, etapaCodigo, fecha);
+    const actualizados = await obtenerLotes();
     setLotes(actualizados);
+    setConfirmandoId(null);
   }
 
-  // Aplanar todas las etapas pendientes de todos los lotes, ordenadas por cercanía
-  const etapasPendientes = lotes
-    .flatMap((lote) =>
-      lote.etapas
-        .filter((e) => e.fechaReal === null)
-        .map((e) => ({ ...e, loteId: lote.id, loteNombre: lote.nombre })),
-    )
-    .sort((a, b) => diasHasta(a.fechaPlanificada) - diasHasta(b.fechaPlanificada));
+  const pendientes = lotes
+    .flatMap((l) => l.etapas.filter((e) => !e.fechaReal).map((e) => ({ ...e, loteId: l.id, loteNombre: l.nombre })))
+    .sort((a,b) => diasHasta(a.fechaPlanificada) - diasHasta(b.fechaPlanificada))
+    .filter((e) => diasHasta(e.fechaPlanificada) <= 14);
 
-  const proximos14Dias = etapasPendientes.filter((e) => diasHasta(e.fechaPlanificada) <= 14);
+  const hoy = new Date().toLocaleDateString("es-CL", { weekday:"long", day:"numeric", month:"long" });
 
   return (
-    <main style={{ maxWidth: 480, margin: "0 auto", padding: 16, fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 4 }}>SmartAgro</h1>
-      <p style={{ fontSize: 16, color: "#666", marginBottom: 16 }}>
-        Próximas etapas en tus cultivos
-      </p>
+    <div style={{ background:"var(--bg-page)", minHeight:"100vh" }}>
+      {/* Header */}
+      <div style={{ background:"var(--green)", padding:"20px 20px 28px" }}>
+        <div style={{ maxWidth:520, margin:"0 auto" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <div>
+              <div style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em", color:"rgba(255,255,255,0.6)", textTransform:"uppercase" }}>SmartAgro</div>
+              <h1 style={{ fontSize:22, fontWeight:700, color:"#fff", marginTop:2 }}>¿Qué hacer hoy?</h1>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginTop:3, textTransform:"capitalize" }}>{hoy}</div>
+            </div>
+            <div style={{ width:44, height:44, borderRadius:"50%", background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>🌱</div>
+          </div>
+          <div style={{ display:"flex", gap:8, marginTop:20 }}>
+            <Link href="/nuevo-lote" style={{ flex:1 }}>
+              <button style={{ width:"100%", padding:"10px 0", background:"rgba(255,255,255,0.18)", color:"#fff", border:"1px solid rgba(255,255,255,0.3)", borderRadius:"var(--radius-md)", fontSize:14, fontWeight:500 }}>
+                + Nuevo lote
+              </button>
+            </Link>
+            <Link href="/calendario" style={{ flex:1 }}>
+              <button style={{ width:"100%", padding:"10px 0", background:"rgba(255,255,255,0.18)", color:"#fff", border:"1px solid rgba(255,255,255,0.3)", borderRadius:"var(--radius-md)", fontSize:14, fontWeight:500 }}>
+                📅 Calendario
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
 
-      <Link href="/nuevo-lote">
-        <button
-          style={{
-            fontSize: 16,
-            fontWeight: 600,
-            padding: "12px 16px",
-            width: "100%",
-            backgroundColor: "#1976d2",
-            color: "white",
-            border: "none",
-            borderRadius: 10,
-            marginBottom: 24,
-          }}
-        >
-          + Crear nuevo lote
-        </button>
-      </Link>
+      {/* Contenido */}
+      <div style={{ maxWidth:520, margin:"0 auto", padding:"20px 16px" }}>
+        {cargando && <p style={{ color:"var(--text-3)", textAlign:"center", padding:32 }}>Cargando...</p>}
 
-      {cargando && <p>Cargando...</p>}
+        {!cargando && pendientes.length === 0 && (
+          <div style={{ background:"var(--bg-card)", borderRadius:"var(--radius-lg)", padding:"32px 24px", textAlign:"center", border:"1px solid var(--border)" }}>
+            <div style={{ fontSize:40, marginBottom:12 }}>✅</div>
+            <p style={{ fontSize:16, fontWeight:600, color:"var(--text-1)" }}>Todo al día</p>
+            <p style={{ fontSize:14, color:"var(--text-3)", marginTop:6 }}>No tienes etapas en los próximos 14 días.</p>
+          </div>
+        )}
 
-      {!cargando && proximos14Dias.length === 0 && (
-        <p style={{ fontSize: 16, color: "#666" }}>
-          No tienes etapas próximas en los siguientes 14 días.
-        </p>
-      )}
-
-      {proximos14Dias.map((etapa) => (
-        <EtapaCard
-          key={`${etapa.loteId}-${etapa.etapaCodigo}`}
-          loteId={etapa.loteId}
-          loteNombre={etapa.loteNombre}
-          etapaCodigo={etapa.etapaCodigo}
-          nombre={etapa.nombre}
-          fechaPlanificada={etapa.fechaPlanificada}
-          fechaReal={etapa.fechaReal}
-          onConfirmar={handleConfirmar}
-        />
-      ))}
-    </main>
+        {pendientes.length > 0 && (
+          <>
+            <div style={{ fontSize:13, fontWeight:600, color:"var(--text-2)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>
+              {pendientes.length} etapa{pendientes.length>1?"s":""} próxima{pendientes.length>1?"s":""}
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {pendientes.map((etapa) => {
+                const key = `${etapa.loteId}-${etapa.etapaCodigo}`;
+                const dias = diasHasta(etapa.fechaPlanificada);
+                const etiq = etiquetaDia(dias);
+                const barra = barraUrgencia(dias);
+                const activo = confirmandoId === key;
+                return (
+                  <div key={key} style={{ background:"var(--bg-card)", borderRadius:"var(--radius-md)", border:"1px solid var(--border)", overflow:"hidden", display:"flex" }}>
+                    {/* Barra de urgencia */}
+                    <div style={{ width:4, background:barra, flexShrink:0 }} />
+                    <div style={{ flex:1, padding:"14px 16px" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                        <div>
+                          <div style={{ fontSize:15, fontWeight:600, color:"var(--text-1)" }}>{etapa.nombre}</div>
+                          <div style={{ fontSize:13, color:"var(--text-3)", marginTop:2 }}>{etapa.loteNombre}</div>
+                        </div>
+                        <span style={{ fontSize:12, fontWeight:600, padding:"3px 9px", borderRadius:99, background:etiq.bg, color:etiq.color, whiteSpace:"nowrap", marginLeft:12 }}>
+                          {etiq.texto}
+                        </span>
+                      </div>
+                      <div style={{ fontSize:13, color:"var(--text-2)", marginTop:8 }}>
+                        Planificado: {new Date(etapa.fechaPlanificada).toLocaleDateString("es-CL", { day:"numeric", month:"long" })}
+                      </div>
+                      {!activo ? (
+                        <button
+                          onClick={() => setConfirmandoId(key)}
+                          style={{ marginTop:12, padding:"8px 16px", background:"var(--green)", color:"#fff", border:"none", borderRadius:"var(--radius-sm)", fontSize:13, fontWeight:600 }}>
+                          Confirmar realizado
+                        </button>
+                      ) : (
+                        <div style={{ marginTop:12, display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+                          <input
+                            type="date"
+                            value={fechaInputs[key] ?? new Date().toISOString().split("T")[0]}
+                            onChange={(e) => setFechaInputs((prev) => ({ ...prev, [key]: e.target.value }))}
+                            style={{ flex:1, minWidth:140, fontSize:14, padding:"8px 10px" }}
+                          />
+                          <button
+                            onClick={() => handleConfirmar(etapa.loteId, etapa.etapaCodigo)}
+                            style={{ padding:"8px 16px", background:"var(--green)", color:"#fff", border:"none", borderRadius:"var(--radius-sm)", fontSize:13, fontWeight:600 }}>
+                            Guardar
+                          </button>
+                          <button
+                            onClick={() => setConfirmandoId(null)}
+                            style={{ padding:"8px 12px", background:"transparent", color:"var(--text-3)", border:"1px solid var(--border)", borderRadius:"var(--radius-sm)", fontSize:13 }}>
+                            Cancelar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }

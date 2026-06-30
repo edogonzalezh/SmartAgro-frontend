@@ -1,4 +1,5 @@
-// app/layout.tsx
+import "./globals.css";
+
 export const metadata = {
   title: "SmartAgro",
   description: "Planificación agrícola inteligente para Chile",
