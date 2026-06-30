@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { EtapaCard } from "@/components/EtapaCard";
 import { confirmarEtapa, type Lote } from "@/lib/api";
 
@@ -51,9 +52,27 @@ export default function HoyPage() {
   return (
     <main style={{ maxWidth: 480, margin: "0 auto", padding: 16, fontFamily: "system-ui" }}>
       <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 4 }}>SmartAgro</h1>
-      <p style={{ fontSize: 16, color: "#666", marginBottom: 24 }}>
+      <p style={{ fontSize: 16, color: "#666", marginBottom: 16 }}>
         Próximas etapas en tus cultivos
       </p>
+
+      <Link href="/nuevo-lote">
+        <button
+          style={{
+            fontSize: 16,
+            fontWeight: 600,
+            padding: "12px 16px",
+            width: "100%",
+            backgroundColor: "#1976d2",
+            color: "white",
+            border: "none",
+            borderRadius: 10,
+            marginBottom: 24,
+          }}
+        >
+          + Crear nuevo lote
+        </button>
+      </Link>
 
       {cargando && <p>Cargando...</p>}
 

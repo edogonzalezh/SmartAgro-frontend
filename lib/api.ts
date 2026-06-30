@@ -16,6 +16,30 @@ export interface Lote {
   etapas: EtapaLote[];
 }
 
+export async function crearUsuario(nombre: string, email: string): Promise<{ id: string }> {
+  const res = await fetch(`${API_URL}/usuarios`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nombre, email }),
+  });
+  if (!res.ok) throw new Error("Error al crear el usuario");
+  return res.json();
+}
+
+export async function crearPredio(
+  nombre: string,
+  ubicacion: string,
+  usuarioId: string,
+): Promise<{ id: string }> {
+  const res = await fetch(`${API_URL}/predios`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nombre, ubicacion, usuarioId }),
+  });
+  if (!res.ok) throw new Error("Error al crear el predio");
+  return res.json();
+}
+
 export async function crearLote(data: {
   nombre: string;
   predioId: string;
