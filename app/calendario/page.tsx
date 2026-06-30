@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { type Lote, type EtapaLote } from "@/lib/api";
 
@@ -211,7 +211,7 @@ export default function CalendarioGanttPage() {
   );
 }
 
-const s = {
+const s: Record<string, React.CSSProperties> = {
   wrap:       { maxWidth:960, margin:"0 auto", padding:"16px", fontFamily:"system-ui" },
   header:     { display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 },
   titulo:     { fontSize:24, fontWeight:700, marginBottom:2 },
