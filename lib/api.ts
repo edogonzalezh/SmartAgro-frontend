@@ -101,3 +101,18 @@ export async function actualizarEtapaFicha(etapaId: string, duracionDesdeAnterio
 export async function actualizarTareaFicha(tareaId: string, offsetDias: number) {
   return patch(`/fichas/tareas/${tareaId}`, { offsetDias });
 }
+
+// ─── Gestión de lotes ────────────────────────────────────────────────────────
+
+export async function obtenerPredios(): Promise<any[]> { return get("/lotes/predios"); }
+export async function obtenerLote(loteId: string): Promise<Lote> { return get(`/lotes/${loteId}`); }
+export async function actualizarLote(loteId: string, data: { nombre?: string; notas?: string }) {
+  return patch(`/lotes/${loteId}`, data);
+}
+export async function eliminarLote(loteId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/lotes/${loteId}`, { method:"DELETE", headers: headers() });
+  if (!res.ok) throw new Error("Error al eliminar");
+}
+export async function confirmarEtapaConNotas(loteId: string, etapaCodigo: string, fechaReal: string, notas?: string) {
+  return post(`/lotes/${loteId}/confirmar-etapa`, { etapaCodigo, fechaReal, notas });
+}

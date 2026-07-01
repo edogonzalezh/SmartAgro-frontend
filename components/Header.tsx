@@ -80,8 +80,11 @@ export function Header({ titulo, subtitulo, volverA, volverLabel, extras }: Head
             </div>
             <div style={{ display: "flex", gap: 6, marginTop: 2 }}>
               {extras}
+              <Link href="/dashboard">
+                <button style={s.btnGhost}>📊</button>
+              </Link>
               <Link href="/admin/fichas">
-                <button style={s.btnGhost}>⚙️ Admin</button>
+                <button style={s.btnGhost}>⚙️</button>
               </Link>
               <button onClick={cerrarSesion} style={s.btnGhost}>Salir</button>
             </div>

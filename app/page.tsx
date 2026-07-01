@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { confirmarEtapa, obtenerLotes, type Lote } from "@/lib/api";
+import { confirmarEtapaConNotas, obtenerLotes, type Lote } from "@/lib/api";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/useAuth";
 
@@ -31,6 +31,7 @@ export default function HoyPage() {
   const [cargando, setCargando] = useState(true);
   const [confirmandoId, setConfirmandoId] = useState<string|null>(null);
   const [fechaInputs, setFechaInputs] = useState<Record<string,string>>({});
+  const [notasInputs, setNotasInputs] = useState<Record<string,string>>({});
 
   useEffect(() => {
     if (autenticado === false) { window.location.href = "/login"; return; }
@@ -40,7 +41,8 @@ export default function HoyPage() {
   async function handleConfirmar(loteId: string, etapaCodigo: string) {
     const key = `${loteId}-${etapaCodigo}`;
     const fecha = fechaInputs[key] ?? new Date().toISOString().split("T")[0];
-    await confirmarEtapa(loteId, etapaCodigo, fecha);
+    const notas = notasInputs[key];
+    await confirmarEtapaConNotas(loteId, etapaCodigo, fecha, notas);
     const actualizados = await obtenerLotes();
     setLotes(actualizados);
     setConfirmandoId(null);
@@ -58,6 +60,8 @@ export default function HoyPage() {
         extras={
           <>
             <Link href="/nuevo-lote"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>+ Nuevo lote</button></Link>
+            <Link href="/dashboard"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📊 Dashboard</button></Link>
+            <Link href="/mis-lotes"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📋 Mis lotes</button></Link>
             <Link href="/calendario"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📅 Calendario</button></Link>
           </>
         }
@@ -111,23 +115,26 @@ export default function HoyPage() {
                           Confirmar realizado
                         </button>
                       ) : (
-                        <div style={{ marginTop:12, display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-                          <input
-                            type="date"
-                            value={fechaInputs[key] ?? new Date().toISOString().split("T")[0]}
-                            onChange={(e) => setFechaInputs((prev) => ({ ...prev, [key]: e.target.value }))}
-                            style={{ flex:1, minWidth:140, fontSize:14, padding:"8px 10px" }}
-                          />
-                          <button
-                            onClick={() => handleConfirmar(etapa.loteId, etapa.etapaCodigo)}
-                            style={{ padding:"8px 16px", background:"var(--green)", color:"#fff", border:"none", borderRadius:"var(--radius-sm)", fontSize:13, fontWeight:600 }}>
-                            Guardar
-                          </button>
-                          <button
-                            onClick={() => setConfirmandoId(null)}
-                            style={{ padding:"8px 12px", background:"transparent", color:"var(--text-3)", border:"1px solid var(--border)", borderRadius:"var(--radius-sm)", fontSize:13 }}>
-                            Cancelar
-                          </button>
+                        <div style={{ marginTop:12, display:"flex", flexDirection:"column", gap:8 }}>
+                          <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+                            <input type="date" value={fechaInputs[key] ?? new Date().toISOString().split("T")[0]}
+                              onChange={(e) => setFechaInputs((prev) => ({ ...prev, [key]: e.target.value }))}
+                              style={{ flex:1, minWidth:140, fontSize:14, padding:"8px 10px" }} />
+                          </div>
+                          <input type="text" placeholder="Notas opcionales (ej: llovió, mano de obra escasa...)"
+                            value={notasInputs[key] ?? ""}
+                            onChange={(e) => setNotasInputs((prev) => ({ ...prev, [key]: e.target.value }))}
+                            style={{ fontSize:13, padding:"8px 10px", borderRadius:6, border:"1px solid #dce8dc", width:"100%" }} />
+                          <div style={{ display:"flex", gap:8 }}>
+                            <button onClick={() => handleConfirmar(etapa.loteId, etapa.etapaCodigo)}
+                              style={{ padding:"8px 16px", background:"var(--green)", color:"#fff", border:"none", borderRadius:"var(--radius-sm)", fontSize:13, fontWeight:600 }}>
+                              Guardar
+                            </button>
+                            <button onClick={() => setConfirmandoId(null)}
+                              style={{ padding:"8px 12px", background:"transparent", color:"var(--text-3)", border:"1px solid var(--border)", borderRadius:"var(--radius-sm)", fontSize:13 }}>
+                              Cancelar
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
