@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { obtenerPredios, actualizarLote, eliminarLote, useAuth as _ } from "@/lib/api";
+import { obtenerPredios, actualizarLote, eliminarLote } from "@/lib/api";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/useAuth";
 
