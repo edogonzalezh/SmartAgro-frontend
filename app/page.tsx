@@ -60,7 +60,6 @@ export default function HoyPage() {
         extras={
           <>
             <Link href="/nuevo-lote"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>+ Nuevo lote</button></Link>
-            <Link href="/dashboard"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📊 Dashboard</button></Link>
             <Link href="/mis-lotes"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📋 Mis lotes</button></Link>
             <Link href="/calendario"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📅 Calendario</button></Link>
           </>

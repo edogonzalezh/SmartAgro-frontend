@@ -207,7 +207,7 @@ export default function DashboardPage() {
                     <span style={{ fontSize:28 }}>{emoji}</span>
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ fontSize:14, fontWeight:700, color:"#1a1f1a", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{lote.nombre}</div>
-                      <div style={{ fontSize:11, color:"#8a9e8a" }}>{lote.fichaId?.replace("_"," · ")}</div>
+                      <div style={{ fontSize:11, color:"#8a9e8a" }}>{lote.fichaId?.split("_")[0]?.replace(/^./,c=>c.toUpperCase())} · {lote.fichaId?.split("_")[1]?.replace(/^./,c=>c.toUpperCase())}</div>
                     </div>
                     <div style={{ fontSize:16, fontWeight:800, color: p===100?"#52b788":"#2d6a4f" }}>{p}%</div>
                   </div>

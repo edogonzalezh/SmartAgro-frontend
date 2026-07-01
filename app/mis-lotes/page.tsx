@@ -153,7 +153,7 @@ export default function MisLotesPage() {
                               <span style={{ fontSize:28 }}>{emoji}</span>
                               <div>
                                 <div style={{ fontSize:15, fontWeight:700, color:"#1a1f1a" }}>{lote.nombre}</div>
-                                <div style={{ fontSize:12, color:"#8a9e8a" }}>{lote.ficha?.nombre}</div>
+                                <div style={{ fontSize:12, color:"#8a9e8a" }}>{emoji} {lote.ficha?.nombre}</div>
                               </div>
                             </div>
                             <div style={{ display:"flex", gap:6 }}>

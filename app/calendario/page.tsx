@@ -29,6 +29,17 @@ const ETAPAS_CONFIG = [
 
 const COLOR_TAREA = { plan:"#fff0d8", real:"#c06000", texto:"#7a3a00", textoReal:"#fff" };
 
+
+const EMOJI_CULTIVO: Record<string,string> = { tomate:"🍅", lechuga:"🥬", zapallo:"🎃", default:"🌱" };
+function emojiCultivo(fichaId: string): string {
+  const cultivo = fichaId?.split("_")[0] ?? "default";
+  return EMOJI_CULTIVO[cultivo] ?? EMOJI_CULTIVO.default;
+}
+function nombreCultivo(fichaId: string): string {
+  const cultivo = fichaId?.split("_")[0] ?? "";
+  return cultivo.charAt(0).toUpperCase() + cultivo.slice(1);
+}
+
 function parseFecha(s: string): Date { return new Date(s); }
 function fmt(d: Date, modo?: "corto"): string {
   if (modo === "corto") return d.toLocaleDateString("es-CL",{ day:"numeric", month:"short" });
@@ -88,7 +99,10 @@ function construirFilas(lote: Lote): FilaGantt[] {
     }
   }
 
-  return filas.sort((a,b)=>a.planInicio.getTime()-b.planInicio.getTime());
+  // Etapas primero ordenadas por fecha, luego tareas ordenadas por fecha
+  const etapasOrdenadas = filas.filter(f=>!f.esTarea).sort((a,b)=>a.planInicio.getTime()-b.planInicio.getTime());
+  const tareasOrdenadas = filas.filter(f=>f.esTarea).sort((a,b)=>a.planInicio.getTime()-b.planInicio.getTime());
+  return [...etapasOrdenadas, ...tareasOrdenadas];
 }
 
 function getVentana(modo: VistaMode, offset: number): { inicio: Date; fin: Date; label: string } {
@@ -196,13 +210,13 @@ export default function CalendarioPage() {
     <div style={{ background:"var(--bg-page,#f4f7f4)", minHeight:"100vh" }}>
       <Header
         titulo="Calendario del cultivo"
-        subtitulo={loteActivo?.nombre}
+        subtitulo={loteActivo ? `${emojiCultivo(loteActivo.fichaId)} ${nombreCultivo(loteActivo.fichaId)} · ${loteActivo.nombre}` : undefined}
         volverA="/"
         volverLabel="← Inicio"
         extras={lotes.length>1 ? (
           <select style={{ fontSize:13, padding:"4px 8px", borderRadius:6, border:"1px solid rgba(255,255,255,0.25)", background:"rgba(255,255,255,0.15)", color:"#fff", cursor:"pointer" }}
             value={loteActivo?.id} onChange={e=>setLoteActivo(lotes.find(l=>l.id===e.target.value)??loteActivo)}>
-            {lotes.map(l=><option key={l.id} value={l.id} style={{color:"#000"}}>{l.nombre}</option>)}
+            {lotes.map(l=><option key={l.id} value={l.id} style={{color:"#000"}}>{emojiCultivo(l.fichaId)} {nombreCultivo(l.fichaId)} · {l.nombre}</option>)}
           </select>
         ) : undefined}
       />
