@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { type Lote, type EtapaLote, type TareaLote, obtenerLotes } from "@/lib/api";
+import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/useAuth";
 
 type VistaMode = "ciclo" | "mes" | "semana";
@@ -193,24 +194,18 @@ export default function CalendarioPage() {
 
   return (
     <div style={{ background:"var(--bg-page,#f4f7f4)", minHeight:"100vh" }}>
-      {/* Header */}
-      <div style={{ background:"#2d6a4f", padding:"18px 20px" }}>
-        <div style={{ maxWidth:980, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <Link href="/"><button style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"#fff", borderRadius:6, padding:"6px 12px", fontSize:13, cursor:"pointer" }}>← Inicio</button></Link>
-            <div>
-              <div style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em", color:"rgba(255,255,255,0.5)", textTransform:"uppercase" }}>SmartAgro</div>
-              <h1 style={{ fontSize:18, fontWeight:700, color:"#fff", marginTop:1 }}>Calendario del cultivo</h1>
-            </div>
-          </div>
-          {lotes.length>1 && (
-            <select style={{ fontSize:14, padding:"6px 10px", borderRadius:6, border:"none", background:"rgba(255,255,255,0.15)", color:"#fff", cursor:"pointer" }}
-              value={loteActivo.id} onChange={e=>setLoteActivo(lotes.find(l=>l.id===e.target.value)??loteActivo)}>
-              {lotes.map(l=><option key={l.id} value={l.id} style={{color:"#000"}}>{l.nombre}</option>)}
-            </select>
-          )}
-        </div>
-      </div>
+      <Header
+        titulo="Calendario del cultivo"
+        subtitulo={loteActivo?.nombre}
+        volverA="/"
+        volverLabel="← Inicio"
+        extras={lotes.length>1 ? (
+          <select style={{ fontSize:13, padding:"4px 8px", borderRadius:6, border:"1px solid rgba(255,255,255,0.25)", background:"rgba(255,255,255,0.15)", color:"#fff", cursor:"pointer" }}
+            value={loteActivo?.id} onChange={e=>setLoteActivo(lotes.find(l=>l.id===e.target.value)??loteActivo)}>
+            {lotes.map(l=><option key={l.id} value={l.id} style={{color:"#000"}}>{l.nombre}</option>)}
+          </select>
+        ) : undefined}
+      />
 
       <div style={{ maxWidth:980, margin:"0 auto", padding:"20px 16px" }}>
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { crearUsuario, crearPredio, crearLote } from "@/lib/api";
+import { Header } from "@/components/Header";
 
 const FICHAS = [
   { id:"tomate_talca",  nombre:"Tomate",  zona:"Talca", emoji:"🍅" },
@@ -51,18 +52,7 @@ export default function NuevoLotePage() {
 
   return (
     <div style={{ background:"var(--bg-page)", minHeight:"100vh" }}>
-      {/* Header */}
-      <div style={{ background:"var(--green)", padding:"18px 20px" }}>
-        <div style={{ maxWidth:580, margin:"0 auto", display:"flex", alignItems:"center", gap:12 }}>
-          <Link href="/">
-            <button style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"#fff", borderRadius:"var(--radius-sm)", padding:"6px 12px", fontSize:13, cursor:"pointer" }}>← Volver</button>
-          </Link>
-          <div>
-            <div style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em", color:"rgba(255,255,255,0.55)", textTransform:"uppercase" }}>SmartAgro</div>
-            <h1 style={{ fontSize:18, fontWeight:700, color:"#fff", marginTop:1 }}>Nuevo lote</h1>
-          </div>
-        </div>
-      </div>
+      <Header titulo="Nuevo lote" volverA="/" volverLabel="← Volver" />
 
       <div style={{ maxWidth:580, margin:"0 auto", padding:"24px 16px" }}>
         <form onSubmit={handleSubmit} style={{ display:"flex", flexDirection:"column", gap:20 }}>

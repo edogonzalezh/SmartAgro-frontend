@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { confirmarEtapa, obtenerLotes, type Lote } from "@/lib/api";
+import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/useAuth";
 
 function diasHasta(fecha: string): number {
@@ -25,7 +26,7 @@ function barraUrgencia(dias: number): string {
 }
 
 export default function HoyPage() {
-  const { autenticado, cerrarSesion } = useAuth();
+  const { autenticado } = useAuth();
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [cargando, setCargando] = useState(true);
   const [confirmandoId, setConfirmandoId] = useState<string|null>(null);
@@ -50,38 +51,17 @@ export default function HoyPage() {
     .sort((a,b) => diasHasta(a.fechaPlanificada) - diasHasta(b.fechaPlanificada))
     .filter((e) => diasHasta(e.fechaPlanificada) <= 14);
 
-  const hoy = new Date().toLocaleDateString("es-CL", { weekday:"long", day:"numeric", month:"long" });
-
   return (
     <div style={{ background:"var(--bg-page)", minHeight:"100vh" }}>
-      {/* Header */}
-      <div style={{ background:"var(--green)", padding:"20px 20px 28px" }}>
-        <div style={{ maxWidth:520, margin:"0 auto" }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div>
-              <div style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em", color:"rgba(255,255,255,0.6)", textTransform:"uppercase" }}>SmartAgro</div>
-              <h1 style={{ fontSize:22, fontWeight:700, color:"#fff", marginTop:2 }}>¿Qué hacer hoy?</h1>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginTop:3, textTransform:"capitalize" }}>{hoy}</div>
-            </div>
-            <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-            <Link href="/admin/fichas"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>⚙️ Admin</button></Link>
-            <button onClick={cerrarSesion} style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>Salir</button>
-          </div>
-          </div>
-          <div style={{ display:"flex", gap:8, marginTop:20 }}>
-            <Link href="/nuevo-lote" style={{ flex:1 }}>
-              <button style={{ width:"100%", padding:"10px 0", background:"rgba(255,255,255,0.18)", color:"#fff", border:"1px solid rgba(255,255,255,0.3)", borderRadius:"var(--radius-md)", fontSize:14, fontWeight:500 }}>
-                + Nuevo lote
-              </button>
-            </Link>
-            <Link href="/calendario" style={{ flex:1 }}>
-              <button style={{ width:"100%", padding:"10px 0", background:"rgba(255,255,255,0.18)", color:"#fff", border:"1px solid rgba(255,255,255,0.3)", borderRadius:"var(--radius-md)", fontSize:14, fontWeight:500 }}>
-                📅 Calendario
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Header
+        titulo="¿Qué hacer hoy?"
+        extras={
+          <>
+            <Link href="/nuevo-lote"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>+ Nuevo lote</button></Link>
+            <Link href="/calendario"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>📅 Calendario</button></Link>
+          </>
+        }
+      />
 
       {/* Contenido */}
       <div style={{ maxWidth:520, margin:"0 auto", padding:"20px 16px" }}>
