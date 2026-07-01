@@ -60,9 +60,7 @@ export function Header({ titulo, subtitulo, volverA, volverLabel, extras }: Head
               </Link>
             )}
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
-                SmartAgro
-              </div>
+              <Link href="/" style={{ textDecoration:"none" }}><div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", cursor:"pointer" }}>SmartAgro</div></Link>
               <h1 style={{ fontSize: 17, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2 }}>{titulo}</h1>
               {subtitulo && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{subtitulo}</div>}
             </div>
