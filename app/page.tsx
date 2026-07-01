@@ -2,15 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { confirmarEtapa, type Lote } from "@/lib/api";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
-
-async function obtenerLotes(): Promise<Lote[]> {
-  const res = await fetch(`${API_URL}/lotes`);
-  if (!res.ok) return [];
-  return res.json();
-}
+import { confirmarEtapa, obtenerLotes, type Lote } from "@/lib/api";
+import { useAuth } from "@/lib/useAuth";
 
 function diasHasta(fecha: string): number {
   const hoy = new Date(); hoy.setHours(0,0,0,0);
@@ -32,14 +25,16 @@ function barraUrgencia(dias: number): string {
 }
 
 export default function HoyPage() {
+  const { autenticado, cerrarSesion } = useAuth();
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [cargando, setCargando] = useState(true);
   const [confirmandoId, setConfirmandoId] = useState<string|null>(null);
   const [fechaInputs, setFechaInputs] = useState<Record<string,string>>({});
 
   useEffect(() => {
-    obtenerLotes().then(setLotes).finally(() => setCargando(false));
-  }, []);
+    if (autenticado === false) { window.location.href = "/login"; return; }
+    if (autenticado === true) obtenerLotes().then(setLotes).finally(() => setCargando(false));
+  }, [autenticado]);
 
   async function handleConfirmar(loteId: string, etapaCodigo: string) {
     const key = `${loteId}-${etapaCodigo}`;
@@ -68,7 +63,10 @@ export default function HoyPage() {
               <h1 style={{ fontSize:22, fontWeight:700, color:"#fff", marginTop:2 }}>¿Qué hacer hoy?</h1>
               <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginTop:3, textTransform:"capitalize" }}>{hoy}</div>
             </div>
-            <div style={{ width:44, height:44, borderRadius:"50%", background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>🌱</div>
+            <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+            <Link href="/admin/fichas"><button style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>⚙️ Admin</button></Link>
+            <button onClick={cerrarSesion} style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"#fff", borderRadius:6, padding:"5px 10px", fontSize:12, cursor:"pointer" }}>Salir</button>
+          </div>
           </div>
           <div style={{ display:"flex", gap:8, marginTop:20 }}>
             <Link href="/nuevo-lote" style={{ flex:1 }}>

@@ -27,7 +27,7 @@ const ETAPAS_CONFIG = [
   { codigo:"cosecha",           nombre:"Cosecha",               color:"bar-coral",  esTarea:false },
 ];
 
-const COLOR_TAREA = { plan:"#e8f4fd", real:"#1a6bbf", texto:"#1a5a8a", textoReal:"#fff" };
+const COLOR_TAREA = { plan:"#fff0d8", real:"#c06000", texto:"#7a3a00", textoReal:"#fff" };
 
 function parseFecha(s: string): Date { return new Date(s); }
 function fmt(d: Date, modo?: "corto"): string {
@@ -335,7 +335,7 @@ export default function CalendarioPage() {
 
             {/* Leyenda */}
             <div style={{ display:"flex",gap:14,flexWrap:"wrap",padding:"10px 14px",borderTop:"1px solid #dce8dc",background:"#f4f7f4",borderRadius:"0 0 12px 12px",alignItems:"center" }}>
-              {[{c:"#C0DD97",l:"Etapa planificada"},{c:"#4a8a0e",l:"Etapa real"},{c:"#e8f4fd",l:"Labor/tarea"},{c:"#E24B4A",l:"Hoy/atraso",w:3},{c:"#1D9E75",l:"Adelanto",w:3}].map(it=>(
+              {[{c:"#C0DD97",l:"Etapa planificada"},{c:"#4a8a0e",l:"Etapa real"},{c:"#fff0d8",l:"Labor/tarea"},{c:"#E24B4A",l:"Hoy/atraso",w:3},{c:"#1D9E75",l:"Adelanto",w:3}].map(it=>(
                 <div key={it.l} style={{ display:"flex",alignItems:"center",gap:5,fontSize:11,color:"#556055" }}>
                   <div style={{ width:it.w??14,height:8,borderRadius:it.w?0:2,background:it.c,border:it.c==="#e8f4fd"?"1px solid #b5d4f4":"none" }} />
                   <span>{it.l}</span>
