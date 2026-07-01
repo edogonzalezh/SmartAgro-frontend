@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { obtenerLotes, type Lote } from "@/lib/api";
+import { obtenerLotes, obtenerResumenGlobal, type Lote, type ResumenGlobal } from "@/lib/api";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/useAuth";
 
@@ -60,12 +60,17 @@ export default function DashboardPage() {
   const router = useRouter();
   const { autenticado } = useAuth();
   const [lotes, setLotes] = useState<Lote[]>([]);
+  const [resumenEco, setResumenEco] = useState<ResumenGlobal[]>([]);
   const [cargando, setCargando] = useState(true);
   const [vistaLotes, setVistaLotes] = useState<"grid"|"lista">("grid");
 
   useEffect(()=>{
     if (autenticado===false) { router.push("/login"); return; }
-    if (autenticado===true) obtenerLotes().then(setLotes).finally(()=>setCargando(false));
+    if (autenticado===true) {
+      Promise.all([obtenerLotes(), obtenerResumenGlobal()])
+        .then(([l, r]) => { setLotes(l); setResumenEco(r); })
+        .finally(()=>setCargando(false));
+    }
   },[autenticado]);
 
   // Cálculos globales
@@ -163,7 +168,66 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ── Estado de todos los lotes ── */}
+
+        {/* ── Resumen económico ── */}
+        {resumenEco.some(r=>r.totalGastos>0||r.totalIngresos>0) && (
+          <div style={{ background:"#fff", border:"1px solid #dce8dc", borderRadius:12, padding:"16px 18px", marginBottom:20 }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"#2d6a4f", textTransform:"uppercase" as const, letterSpacing:"0.07em", marginBottom:14 }}>
+              💰 Resumen económico de la temporada
+            </div>
+
+            {/* Métricas globales */}
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
+              {[
+                { label:"Total gastos",   valor:fmtPeso(totalGastosGlobal),  color:"#c0392b", bg:"#fde8e6", emoji:"💸" },
+                { label:"Total ingresos", valor:fmtPeso(totalIngresosGlobal), color:"#2d6a4f", bg:"#d8ede2", emoji:"💰" },
+                { label:"Margen neto",    valor:fmtPeso(margenGlobal), color:margenGlobal>=0?"#2d6a4f":"#c0392b", bg:margenGlobal>=0?"#d8ede2":"#fde8e6", emoji:margenGlobal>=0?"📈":"📉" },
+              ].map(m=>(
+                <div key={m.label} style={{ background:m.bg, borderRadius:10, padding:"12px 10px", textAlign:"center" as const }}>
+                  <div style={{ fontSize:20 }}>{m.emoji}</div>
+                  <div style={{ fontSize:14, fontWeight:800, color:m.color, marginTop:3 }}>{m.valor}</div>
+                  <div style={{ fontSize:10, color:"#556055", marginTop:2 }}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Ranking de lotes por margen */}
+            {resumenEco.filter(r=>r.totalGastos>0||r.totalIngresos>0).length>0 && (
+              <>
+                <div style={{ fontSize:11, fontWeight:700, color:"#8a9e8a", textTransform:"uppercase" as const, letterSpacing:"0.06em", marginBottom:8 }}>
+                  Resultados por lote
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {[...resumenEco].filter(r=>r.totalGastos>0||r.totalIngresos>0)
+                    .sort((a,b)=>b.margen-a.margen)
+                    .map(r=>{
+                      const pctIngreso = r.totalGastos>0 ? Math.round((r.totalIngresos/r.totalGastos)*100) : 0;
+                      return (
+                        <div key={r.loteId} style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", background:"#f4f7f4", borderRadius:8 }}>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontSize:13, fontWeight:600, color:"#1a1f1a", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{r.loteNombre}</div>
+                            <div style={{ fontSize:11, color:"#8a9e8a" }}>{r.fichaNombre}</div>
+                          </div>
+                          <div style={{ textAlign:"right" as const, flexShrink:0 }}>
+                            <div style={{ fontSize:13, fontWeight:700, color:r.margen>=0?"#2d6a4f":"#c0392b" }}>{fmtPeso(r.margen)}</div>
+                            <div style={{ fontSize:10, color:"#8a9e8a" }}>
+                              {r.totalGastos>0 ? `${fmtPeso(r.totalGastos)} gastos · ${pctIngreso}% recuperado` : "Sin gastos aún"}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                  })}
+                </div>
+              </>
+            )}
+
+            <div style={{ marginTop:12, textAlign:"right" as const }}>
+              <a href="/economico" style={{ fontSize:13, color:"#2d6a4f", fontWeight:600 }}>Ver detalle económico →</a>
+            </div>
+          </div>
+        )}
+
+        {/* ── Estado de todos los lotes ── */
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
           <div style={{ fontSize:13, fontWeight:700, color:"#556055", textTransform:"uppercase", letterSpacing:"0.07em" }}>
             Estado de cultivos ({lotes.length})
