@@ -75,19 +75,19 @@ export default function NuevoLotePage() {
               <p style={{ fontSize:13, color:"#8a9e8a", marginBottom:16 }}>Cargando cultivos...</p>
             )}
 
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:16 }}>
               {fichas.map(f => (
                 <button key={f.id} type="button" onClick={() => setForm(p => ({ ...p, fichaId:f.id }))}
                   style={{
-                    flex:"1 1 calc(50% - 4px)", minWidth:120, padding:"12px 10px",
-                    borderRadius:10,
+                    padding:"8px 6px",
+                    borderRadius:8,
                     border: form.fichaId===f.id ? "2px solid #2d6a4f" : "1px solid #dce8dc",
                     background: form.fichaId===f.id ? "#d8ede2" : "#fff",
                     cursor:"pointer", textAlign:"center" as const, transition:"all 0.15s",
                   }}>
-                  <div style={{ fontSize:24 }}>{emojiCultivo(f.cultivo)}</div>
-                  <div style={{ fontSize:13, fontWeight:600, color:"#1a1f1a", marginTop:3 }}>{f.nombre}</div>
-                  <div style={{ fontSize:10, color:"#8a9e8a" }}>{f.zona}</div>
+                  <div style={{ fontSize:20 }}>{emojiCultivo(f.cultivo)}</div>
+                  <div style={{ fontSize:12, fontWeight:600, color:"#1a1f1a", marginTop:2, lineHeight:1.2 }}>{f.nombre}</div>
+                  <div style={{ fontSize:9, color:"#8a9e8a" }}>{f.zona}</div>
                 </button>
               ))}
             </div>
