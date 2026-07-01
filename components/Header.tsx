@@ -84,6 +84,7 @@ export function Header({ titulo, subtitulo, volverA, volverLabel, extras }: Head
               <Link href="/dashboard"><button style={s.btnGhost}>📊 Dashboard</button></Link>
               <Link href="/mis-lotes"><button style={s.btnGhost}>📋 Lotes</button></Link>
               <Link href="/calendario"><button style={s.btnGhost}>📅 Calendario</button></Link>
+              <Link href="/exportar"><button style={s.btnGhost}>📄 PDF</button></Link>
               <Link href="/admin/fichas"><button style={s.btnGhost}>⚙️</button></Link>
               <button onClick={cerrarSesion} style={s.btnGhost}>Salir</button>
             </div>

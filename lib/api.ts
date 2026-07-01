@@ -113,6 +113,6 @@ export async function eliminarLote(loteId: string): Promise<void> {
   const res = await fetch(`${API_URL}/lotes/${loteId}`, { method:"DELETE", headers: headers() });
   if (!res.ok) throw new Error("Error al eliminar");
 }
-export async function confirmarEtapaConNotas(loteId: string, etapaCodigo: string, fechaReal: string, notas?: string) {
-  return post(`/lotes/${loteId}/confirmar-etapa`, { etapaCodigo, fechaReal, notas });
+export async function confirmarEtapaConNotas(loteId: string, etapaCodigo: string, fechaReal: string, fechaRealFin?: string, notas?: string) {
+  return post(`/lotes/${loteId}/confirmar-etapa`, { etapaCodigo, fechaReal, fechaRealFin, notas });
 }
