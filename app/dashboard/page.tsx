@@ -108,9 +108,9 @@ export default function DashboardPage() {
             { label:"Ciclos completos",  valor:completados,   color:"#0f7a5a", bg:"#c8f0e0", icono:"✅" },
           ].map(m=>(
             <div key={m.label} style={{ background:m.bg, border:`1px solid ${m.color}30`, borderRadius:12, padding:"14px 16px" }}>
-              <div style={{ fontSize:22 }}>{m.icono}</div>
-              <div style={{ fontSize:28, fontWeight:800, color:m.color, lineHeight:1.1, marginTop:4 }}>{m.valor}</div>
-              <div style={{ fontSize:12, color:"#556055", marginTop:2 }}>{m.label}</div>
+              <div style={{ fontSize:28 }}>{m.icono}</div>
+              <div style={{ fontSize:32, fontWeight:800, color:m.color, lineHeight:1.1, marginTop:4 }}>{m.valor}</div>
+              <div style={{ fontSize:12, color:"#556055", marginTop:4 }}>{m.label}</div>
             </div>
           ))}
         </div>
