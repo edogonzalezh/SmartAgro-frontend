@@ -28,7 +28,7 @@ export default function NuevoLotePage() {
   const [form, setForm] = useState({
     nombre:"", email:"",
     predio:"", ubicacion:"Talca, VII Región",
-    lote:"", fichaId:FICHAS[0].id,
+    lote:"", fichaId:"",
     fechaInicio: new Date().toISOString().split("T")[0],
   });
   const [enviando, setEnviando] = useState(false);
@@ -62,7 +62,7 @@ export default function NuevoLotePage() {
           <div style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:"var(--radius-lg)", padding:"18px 20px" }}>
             <div style={secTitulo}>Cultivo</div>
             <div style={{ display:"flex", gap:10, marginBottom:16 }}>
-              {FICHAS.map((f) => (
+              {fichas.map((f) => (
                 <button key={f.id} type="button" onClick={() => setForm((p) => ({ ...p, fichaId:f.id }))}
                   style={{ flex:1, padding:"14px 10px", borderRadius:"var(--radius-md)", border: form.fichaId===f.id ? "2px solid var(--green)" : "1px solid var(--border)", background: form.fichaId===f.id ? "#d8ede2" : "var(--bg-card)", cursor:"pointer", textAlign:"center", transition:"all 0.15s" }}>
                   <div style={{ fontSize:28 }}>{f.emoji}</div>
