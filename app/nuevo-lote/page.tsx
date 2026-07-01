@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { crearUsuario, crearPredio, crearLote } from "@/lib/api";
+import { crearUsuario, crearPredio, crearLote, obtenerFichas, type FichaCultivo } from "@/lib/api";
+import { useEffect, useState as useStateF } from "react";
 import { Header } from "@/components/Header";
 
-const FICHAS = [
-  { id:"tomate_talca",  nombre:"Tomate",  zona:"Talca", emoji:"🍅" },
-  { id:"lechuga_talca", nombre:"Lechuga", zona:"Talca", emoji:"🥬" },
-];
+const EMOJI_MAP: Record<string,string> = { tomate:"🍅", lechuga:"🥬", zapallo:"🎃", pimenton:"🫑", cebolla:"🧅", default:"🌱" };
+function emojiCultivo(cultivo: string) { return EMOJI_MAP[cultivo?.toLowerCase()] ?? EMOJI_MAP.default; }
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -24,6 +23,8 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
 
 export default function NuevoLotePage() {
   const router = useRouter();
+  const [fichas, setFichas] = useStateF<FichaCultivo[]>([]);
+  useEffect(()=>{ obtenerFichas().then(setFichas); },[]);
   const [form, setForm] = useState({
     nombre:"", email:"",
     predio:"", ubicacion:"Talca, VII Región",
@@ -48,7 +49,7 @@ export default function NuevoLotePage() {
     finally { setEnviando(false); }
   }
 
-  const fichaSeleccionada = FICHAS.find((f) => f.id === form.fichaId);
+  const fichaSeleccionada = fichas.find((f) => f.id === form.fichaId);
 
   return (
     <div style={{ background:"var(--bg-page)", minHeight:"100vh" }}>
@@ -121,7 +122,7 @@ export default function NuevoLotePage() {
 
           <button type="submit" disabled={enviando}
             style={{ padding:"14px 20px", background: enviando?"#7aad94":"var(--green)", color:"#fff", border:"none", borderRadius:"var(--radius-md)", fontSize:16, fontWeight:700, cursor: enviando?"default":"pointer" }}>
-            {enviando ? "Creando calendario..." : `Crear lote ${fichaSeleccionada?.emoji}`}
+            {enviando ? "Creando calendario..." : `Crear lote ${fichaSeleccionada ? emojiCultivo(fichaSeleccionada.cultivo) : ""}`}
           </button>
         </form>
       </div>
