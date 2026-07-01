@@ -211,15 +211,17 @@ export default function CalendarioPage() {
       <Header
         titulo="Calendario del cultivo"
         subtitulo={loteActivo ? `${emojiCultivo(loteActivo.fichaId)} ${nombreCultivo(loteActivo.fichaId)} · ${loteActivo.nombre}` : undefined}
-        volverA="/"
-        volverLabel="← Inicio"
-        extras={lotes.length>1 ? (
-          <select style={{ fontSize:13, padding:"4px 8px", borderRadius:6, border:"1px solid rgba(255,255,255,0.25)", background:"rgba(255,255,255,0.15)", color:"#fff", cursor:"pointer" }}
-            value={loteActivo?.id} onChange={e=>setLoteActivo(lotes.find(l=>l.id===e.target.value)??loteActivo)}>
-            {lotes.map(l=><option key={l.id} value={l.id} style={{color:"#000"}}>{emojiCultivo(l.fichaId)} {nombreCultivo(l.fichaId)} · {l.nombre}</option>)}
-          </select>
-        ) : undefined}
       />
+      {lotes.length>1 && (
+        <div style={{ background:"#2d6a4f", paddingBottom:12, paddingLeft:20, paddingRight:20 }}>
+          <div style={{ maxWidth:980, margin:"0 auto" }}>
+            <select style={{ fontSize:13, padding:"6px 10px", borderRadius:6, border:"1px solid rgba(255,255,255,0.25)", background:"rgba(255,255,255,0.15)", color:"#fff", cursor:"pointer", width:"100%", maxWidth:320 }}
+              value={loteActivo?.id} onChange={e=>setLoteActivo(lotes.find(l=>l.id===e.target.value)??loteActivo)}>
+              {lotes.map(l=><option key={l.id} value={l.id} style={{color:"#000"}}>{emojiCultivo(l.fichaId)} {nombreCultivo(l.fichaId)} · {l.nombre}</option>)}
+            </select>
+          </div>
+        </div>
+      )}
 
       <div style={{ maxWidth:980, margin:"0 auto", padding:"20px 16px" }}>
 
