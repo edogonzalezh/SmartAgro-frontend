@@ -53,7 +53,7 @@ export default function NuevoLotePage() {
       const usuario = await crearUsuario(form.nombre, form.email);
       const predio  = await crearPredio(form.predio, form.ubicacion, usuario.id);
       await crearLote({ nombre:form.lote, predioId:predio.id, fichaId:form.fichaId, fechaInicio:form.fechaInicio });
-      router.push("/");
+      router.push("/dashboard");
     } catch { setError("No se pudo crear el lote. Revisa tu conexión."); }
     finally { setEnviando(false); }
   }

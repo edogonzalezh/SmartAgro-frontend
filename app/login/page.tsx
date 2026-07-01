@@ -19,7 +19,7 @@ export default function LoginPage() {
     try {
       if (modo==="login") await login(form.email, form.password);
       else await registro(form.nombre, form.email, form.password);
-      router.push("/");
+      router.push("/dashboard");
     } catch(err: any) {
       setError(err.message ?? "Error al iniciar sesión");
     } finally { setCargando(false); }

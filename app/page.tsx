@@ -86,7 +86,7 @@ export default function HoyPage() {
 
   return (
     <div style={{ background:"#f4f7f4", minHeight:"100vh" }}>
-      <Header titulo="¿Qué hacer hoy?" />
+      <Header titulo="Labores de hoy" subtitulo="Etapas pendientes próximos 14 días" />
 
       <div style={{ maxWidth:520, margin:"0 auto", padding:"20px 16px" }}>
 
