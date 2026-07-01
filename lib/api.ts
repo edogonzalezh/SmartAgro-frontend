@@ -116,3 +116,38 @@ export async function eliminarLote(loteId: string): Promise<void> {
 export async function confirmarEtapaConNotas(loteId: string, etapaCodigo: string, fechaReal: string, fechaRealFin?: string, notas?: string) {
   return post(`/lotes/${loteId}/confirmar-etapa`, { etapaCodigo, fechaReal, fechaRealFin, notas });
 }
+// ─── Módulo económico (Fase 3) ───────────────────────────────────────────────
+
+export interface Gasto {
+  id: string; loteId: string; categoria: string;
+  descripcion: string; cantidad?: number; unidad?: string;
+  monto: number; fecha: string;
+}
+export interface Ingreso {
+  id: string; loteId: string; descripcion: string;
+  cantidad?: number; unidad?: string; precioUnitario?: number;
+  monto: number; fecha: string; comprador?: string;
+}
+export interface ResumenLote {
+  lote: any; totalGastos: number; totalIngresos: number;
+  margen: number; rentabilidad: number;
+  gastosPorCategoria: Record<string,number>;
+  gastos: Gasto[]; ingresos: Ingreso[];
+}
+export interface ResumenGlobal {
+  loteId: string; loteNombre: string; fichaNombre: string;
+  totalGastos: number; totalIngresos: number; margen: number;
+}
+
+export async function obtenerResumenGlobal(): Promise<ResumenGlobal[]> { return get("/economico/resumen"); }
+export async function obtenerResumenLote(loteId: string): Promise<ResumenLote> { return get(`/economico/lote/${loteId}`); }
+export async function registrarGasto(data: Omit<Gasto,"id">): Promise<Gasto> { return post("/economico/gastos", data); }
+export async function eliminarGasto(gastoId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/economico/gastos/${gastoId}`, { method:"DELETE", headers: headers() });
+  if (!res.ok) throw new Error("Error");
+}
+export async function registrarIngreso(data: Omit<Ingreso,"id">): Promise<Ingreso> { return post("/economico/ingresos", data); }
+export async function eliminarIngreso(ingresoId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/economico/ingresos/${ingresoId}`, { method:"DELETE", headers: headers() });
+  if (!res.ok) throw new Error("Error");
+}
