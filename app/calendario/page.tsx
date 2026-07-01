@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { type Lote, type EtapaLote, type TareaLote } from "@/lib/api";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+import { type Lote, type EtapaLote, type TareaLote, obtenerLotes } from "@/lib/api";
+import { useAuth } from "@/lib/useAuth";
 
 type VistaMode = "ciclo" | "mes" | "semana";
 
@@ -118,11 +117,14 @@ export default function CalendarioPage() {
   const [mostrarReal, setMostrarReal] = useState(true);
   const [tooltip, setTooltip] = useState<TooltipData|null>(null);
 
+  const { autenticado } = useAuth();
+
   useEffect(()=>{
-    fetch(`${API_URL}/lotes`).then(r=>r.json())
+    if (autenticado === false) { window.location.href = "/login"; return; }
+    if (autenticado === true) obtenerLotes()
       .then((d:Lote[])=>{ setLotes(d); if(d.length>0) setLoteActivo(d[0]); })
       .finally(()=>setCargando(false));
-  },[]);
+  },[autenticado]);
 
   // Reset offset al cambiar vista
   function cambiarVista(v: VistaMode) { setVista(v); setOffset(0); }
