@@ -78,9 +78,7 @@ export function Header({ titulo, subtitulo, volverA, volverLabel, extras }: Head
             </div>
             <div style={{ display: "flex", gap: 6, marginTop: 2, flexWrap:"wrap", justifyContent:"flex-end" }}>
               {extras}
-              <Link href="/dashboard"><button style={s.btnGhost}>🏠 Inicio</button></Link>
-              <Link href="/dashboard"><button style={s.btnGhost}>📊 Dashboard</button></Link>
-              <Link href="/"><button style={s.btnGhost}>📋 Hoy</button></Link>
+            <Link href="/"><button style={s.btnGhost}>🏠 Inicio</button></Link>
               <Link href="/asistente"><button style={s.btnGhost}>🤖 Asistente</button></Link>
               <Link href="/mis-lotes"><button style={s.btnGhost}>📋 Lotes</button></Link>
               <Link href="/calendario"><button style={s.btnGhost}>📅 Calendario</button></Link>
