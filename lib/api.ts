@@ -101,6 +101,20 @@ export async function actualizarEtapaFicha(etapaId: string, duracionDesdeAnterio
 export async function actualizarTareaFicha(tareaId: string, offsetDias: number) {
   return patch(`/fichas/tareas/${tareaId}`, { offsetDias });
 }
+export async function agregarEtapa(fichaId: string, data: { etapaCodigo:string; nombre:string; orden:number; duracionDesdeAnterior:number }) {
+  return post(`/fichas/${fichaId}/etapas`, data);
+}
+export async function eliminarEtapaFicha(etapaId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/fichas/etapas/${etapaId}`, { method:"DELETE", headers: headers() });
+  if (!res.ok) throw new Error("Error al eliminar etapa");
+}
+export async function agregarTarea(fichaId: string, data: { nombre:string; etapaAncla:string; offsetDias:number }) {
+  return post(`/fichas/${fichaId}/tareas`, data);
+}
+export async function eliminarTareaFicha(tareaId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/fichas/tareas/${tareaId}`, { method:"DELETE", headers: headers() });
+  if (!res.ok) throw new Error("Error al eliminar tarea");
+}
 
 // ─── Gestión de lotes ────────────────────────────────────────────────────────
 
