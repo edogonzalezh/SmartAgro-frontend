@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { obtenerLotes, obtenerResumenGlobal, confirmarEtapaConNotas, type Lote, type ResumenGlobal } from "@/lib/api";
 import { Header } from "@/components/Header";
+import { ClimaWidget } from "@/components/ClimaWidget";
 import { useAuth } from "@/lib/useAuth";
 
 const EMOJI: Record<string,string> = { tomate:"🍅", lechuga:"🥬", zapallo:"🎃", pimenton:"🫑", cebolla:"🧅", default:"🌱" };
@@ -85,6 +86,14 @@ export default function InicioPage() {
   const margen        = totalIngresos-totalGastos;
   const hayEco        = resumenEco.some(r=>r.totalGastos>0||r.totalIngresos>0);
 
+  // Etapas críticas para cruzar con el clima
+  const etapasCriticas = lotes.flatMap(l=>
+    l.etapas.filter(e=>!e.fechaReal).slice(0,2).map(e=>({
+      nombre: `${l.nombre}: ${e.nombre}`,
+      fecha: e.fechaPlanificada.split("T")[0],
+    }))
+  );
+
   if (cargando) return (
     <div style={{ background:"#f4f7f4", minHeight:"100vh" }}>
       <Header titulo="SmartAgro" />
@@ -123,7 +132,10 @@ export default function InicioPage() {
           ))}
         </div>
 
-        {/* ── 2. Etapas urgentes con confirmación inline ── */}
+        {/* ── 2. Clima ── */}
+        <ClimaWidget etapasCriticas={etapasCriticas} />
+
+        {/* ── 3. Etapas urgentes con confirmación inline ── */}
         {(urgentes.length>0||hoyCount>0||proximas14.length>0) && (
           <div style={{ background:"#fff", border:"1px solid #dce8dc", borderRadius:12, padding:"16px 18px", marginBottom:20 }}>
             <div style={{ fontSize:13, fontWeight:700, color:"#2d6a4f", textTransform:"uppercase" as const, letterSpacing:"0.07em", marginBottom:12 }}>
@@ -189,7 +201,7 @@ export default function InicioPage() {
           </div>
         )}
 
-        {/* ── 3. Resumen económico ── */}
+        {/* ── 4. Resumen económico ── */}
         {hayEco && (
           <div style={{ background:"#fff", border:"1px solid #dce8dc", borderRadius:12, padding:"16px 18px", marginBottom:20 }}>
             <div style={{ fontSize:13, fontWeight:700, color:"#2d6a4f", textTransform:"uppercase" as const, letterSpacing:"0.07em", marginBottom:14 }}>
@@ -212,7 +224,7 @@ export default function InicioPage() {
           </div>
         )}
 
-        {/* ── 4. Estado de todos los lotes ── */}
+        {/* ── 5. Estado de todos los lotes ── */}
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
           <div style={{ fontSize:13, fontWeight:700, color:"#556055", textTransform:"uppercase" as const, letterSpacing:"0.07em" }}>
             Mis cultivos ({lotes.length})
