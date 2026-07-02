@@ -239,8 +239,12 @@ export default function AdminFichasPage() {
                           <input value={formEtapa.etapaCodigo} onChange={e=>setFormEtapa(p=>({...p,etapaCodigo:e.target.value}))} placeholder="Ej: poda_formacion" style={inp} />
                         </div>
                         <div>
-                          <label style={lbl}>Orden (número)</label>
-                          <input type="number" value={formEtapa.orden} onChange={e=>setFormEtapa(p=>({...p,orden:e.target.value}))} placeholder={String(ficha.etapas.length+1)} min={1} style={inp} />
+                          <label style={lbl}>Insertar en posición</label>
+                          <input type="number" value={formEtapa.orden} onChange={e=>setFormEtapa(p=>({...p,orden:e.target.value}))}
+                            placeholder={String(ficha.etapas.length+1)} min={1} max={ficha.etapas.length+1} style={inp} />
+                          <div style={{ fontSize:10, color:"#8a9e8a", marginTop:3 }}>
+                            Las etapas posteriores se desplazarán automáticamente. Actual: {ficha.etapas.length} etapas.
+                          </div>
                         </div>
                         <div>
                           <label style={lbl}>Días desde etapa anterior</label>
